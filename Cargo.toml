@@ -1,0 +1,16 @@
+[package]
+name = "coderift"
+version = "0.1.0"
+edition = "2021"
+description = "A tool for formatting source code for AI analysis"
+license = "MIT"
+repository = "https://github.com/ysakoda/coderift"
+keywords = ["ai", "code", "formatting", "development", "analysis"]
+categories = ["command-line-utilities", "development-tools"]
+
+[dependencies]
+clap = { version = "4.4", features = ["derive"] }
+ignore = "0.4"
+anyhow = "1.0"
+log = "0.4"
+env_logger = "0.10"

@@ -13,9 +13,8 @@ const EXCLUDE_FILES: &[&str] = &[
     "Gemfile.lock",      // Ruby Bundler
 ];
 
-const INCLUDE_EXTENSIONS: &[&str] = &[
-    "rs", "ts", "tsx", "astro", "sql", "yml", "yaml", "tf", "json", "toml", "md",
-];
+const INCLUDE_EXTENSIONS: &[&str] =
+    &["rs", "ts", "tsx", "astro", "sql", "yml", "yaml", "tf", "json", "toml", "md"];
 
 pub struct FileWalker {
     root: String,
@@ -23,9 +22,7 @@ pub struct FileWalker {
 
 impl FileWalker {
     pub fn new(root: &str) -> Self {
-        Self {
-            root: root.to_string(),
-        }
+        Self { root: root.to_string() }
     }
 
     pub fn process_files<W: std::io::Write>(
@@ -47,10 +44,7 @@ impl FileWalker {
     fn should_process(&self, path: &str) -> bool {
         let path = Path::new(path);
 
-        if EXCLUDE_DIRS
-            .iter()
-            .any(|dir| path.components().any(|c| c.as_os_str() == *dir))
-        {
+        if EXCLUDE_DIRS.iter().any(|dir| path.components().any(|c| c.as_os_str() == *dir)) {
             return false;
         }
 
@@ -62,9 +56,8 @@ impl FileWalker {
 
         if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
             return INCLUDE_EXTENSIONS.contains(&ext)
-                || path.file_name().map_or(false, |f| {
-                    f.to_str()
-                        .map_or(false, |s| s.starts_with("Dockerfile") || s == "Makefile")
+                || path.file_name().is_some_and(|f| {
+                    f.to_str().is_some_and(|s| s.starts_with("Dockerfile") || s == "Makefile")
                 });
         }
         false

@@ -1,9 +1,17 @@
 use crate::formatter;
-
 use ignore::WalkBuilder;
 use std::path::Path;
 
 const EXCLUDE_DIRS: &[&str] = &["node_modules", "target", ".git", "dist", ".next"];
+
+const EXCLUDE_FILES: &[&str] = &[
+    "Cargo.lock",        // Rust
+    "package-lock.json", // npm
+    "yarn.lock",         // Yarn
+    "pnpm-lock.yaml",    // pnpm
+    "composer.lock",     // PHP Composer
+    "Gemfile.lock",      // Ruby Bundler
+];
 
 const INCLUDE_EXTENSIONS: &[&str] = &[
     "rs", "ts", "tsx", "astro", "sql", "yml", "yaml", "tf", "json", "toml", "md",
@@ -44,6 +52,12 @@ impl FileWalker {
             .any(|dir| path.components().any(|c| c.as_os_str() == *dir))
         {
             return false;
+        }
+
+        if let Some(file_name) = path.file_name().and_then(|f| f.to_str()) {
+            if EXCLUDE_FILES.iter().any(|excluded| file_name == *excluded) {
+                return false;
+            }
         }
 
         if let Some(ext) = path.extension().and_then(|e| e.to_str()) {

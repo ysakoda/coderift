@@ -4,11 +4,12 @@ use std::io::{self, BufReader, Write};
 use std::path::Path;
 
 pub struct CodeFormatter<W: Write> {
-    writer: W,
+    pub(crate) writer: W,
 }
 
 pub fn create_formatter(output: Option<&str>) -> io::Result<CodeFormatter<Box<dyn Write>>> {
     let writer: Box<dyn Write> = match output {
+        Some("-") => Box::new(Vec::new()),
         Some(path) => Box::new(File::create(path)?),
         None => Box::new(io::stdout()),
     };
@@ -29,5 +30,9 @@ impl<W: Write> CodeFormatter<W> {
         writeln!(self.writer, "{}", content)?;
         writeln!(self.writer, "```\n")?;
         Ok(())
+    }
+
+    pub fn write_all(&mut self, content: &[u8]) -> io::Result<()> {
+        self.writer.write_all(content)
     }
 }
